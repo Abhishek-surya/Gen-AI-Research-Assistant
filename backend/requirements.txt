@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+pydantic
+firebase-admin
+langchain
+openai
+google-generativeai
+PyPDF2
+python-multipart
+python-dotenv
+pytest
