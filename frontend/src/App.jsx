@@ -14,6 +14,8 @@ function ChatLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [messages, setMessages] = useState([]);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  const [currentChatId, setCurrentChatId] = useState(null);
+  const [refreshHistory, setRefreshHistory] = useState(0); // Trigger to reload sidebar
 
   useEffect(() => {
     if (isDarkMode) {
@@ -24,6 +26,7 @@ function ChatLayout() {
   }, [isDarkMode]);
 
   const handleNewChat = () => {
+    setCurrentChatId(null);
     setMessages([]);
   };
 
@@ -37,6 +40,9 @@ function ChatLayout() {
         isOpen={isSidebarOpen}
         setIsOpen={setIsSidebarOpen}
         onNewChat={handleNewChat}
+        onSelectChat={(id) => setCurrentChatId(id)}
+        currentChatId={currentChatId}
+        refreshTrigger={refreshHistory}
       />
       <div className="flex-1 flex flex-col relative w-full">
         <ChatArea
@@ -44,6 +50,11 @@ function ChatLayout() {
           setMessages={setMessages}
           isDarkMode={isDarkMode}
           onToggleDarkMode={toggleDarkMode}
+          currentChatId={currentChatId}
+          setCurrentChatId={(id) => {
+            setCurrentChatId(id);
+            setRefreshHistory(prev => prev + 1);
+          }}
         />
       </div>
     </div>

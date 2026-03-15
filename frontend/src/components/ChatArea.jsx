@@ -1,22 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Send, Moon, Sun } from 'lucide-react';
 import WelcomeScreen from './WelcomeScreen';
+import api from '../services/api';
 
-export default function ChatArea({ messages, setMessages, isDarkMode, onToggleDarkMode }) {
+export default function ChatArea({ messages, setMessages, isDarkMode, onToggleDarkMode, currentChatId, setCurrentChatId }) {
     const [input, setInput] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const messagesEndRef = useRef(null);
 
-    const handleSend = (e) => {
+    // Fetch messages when currentChatId changes
+    useEffect(() => {
+        const fetchMessages = async () => {
+            if (!currentChatId) {
+                setMessages([]);
+                return;
+            }
+            try {
+                const response = await api.get(`/history/${currentChatId}`);
+                setMessages(response.data.messages || []);
+            } catch (error) {
+                console.error("Failed to fetch messages for chat", error);
+            }
+        };
+        fetchMessages();
+    }, [currentChatId, setMessages]);
+
+    // Auto-scroll
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
+    const handleSend = async (e) => {
         e.preventDefault();
-        if (!input.trim()) return;
+        if (!input.trim() || isLoading) return;
 
-        // Optimistic UI update
-        setMessages(prev => [...prev, { role: 'user', content: input }]);
+        const userMessage = input;
         setInput('');
+        setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+        setIsLoading(true);
 
-        // Simulate AI response
-        setTimeout(() => {
-            setMessages(prev => [...prev, { role: 'assistant', content: 'This is a simulated AI response structure. Implement real API call if backend is added.' }]);
-        }, 1000);
+        try {
+            const response = await api.post('/chat', {
+                query: userMessage,
+                chat_id: currentChatId
+            });
+
+            // Set new chat ID if we just created one
+            if (!currentChatId && response.data.chat_id) {
+                setCurrentChatId(response.data.chat_id);
+            }
+
+            setMessages(prev => [...prev, { role: 'assistant', content: response.data.response }]);
+
+        } catch (error) {
+            console.error("Failed to send message", error);
+            setMessages(prev => [...prev, { role: 'assistant', content: 'An error occurred while reaching the server.' }]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -44,10 +85,11 @@ export default function ChatArea({ messages, setMessages, isDarkMode, onToggleDa
                                     ? 'bg-[#7c3aed] text-white rounded-br-sm'
                                     : 'bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 rounded-bl-sm shadow-sm'
                                     }`}>
-                                    <p className="leading-relaxed text-[15px]">{msg.content}</p>
+                                    <p className="leading-relaxed text-[15px] whitespace-pre-wrap">{msg.content}</p>
                                 </div>
                             </div>
                         ))}
+                        <div ref={messagesEndRef} />
                     </div>
                 )}
             </main>

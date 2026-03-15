@@ -1,16 +1,25 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, MessageSquare, Upload, User, BrainCircuit } from 'lucide-react';
 import FileUploadModal from './FileUploadModal';
 import { useAuth } from '../contexts/AuthContext';
+import api from '../services/api';
 
-export default function Sidebar({ isOpen, onNewChat }) {
+export default function Sidebar({ isOpen, onNewChat, onSelectChat, currentChatId, refreshTrigger }) {
     const { currentUser, logout } = useAuth();
-    const [history] = useState([
-        { id: 1, title: 'Quantum Computing Basics' },
-        { id: 2, title: 'Neural Network Architectures' },
-        { id: 3, title: 'Climate Change Research' },
-    ]);
+    const [history, setHistory] = useState([]);
     const [isUploadOpen, setIsUploadOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const response = await api.get('/history');
+                setHistory(response.data);
+            } catch (error) {
+                console.error("Failed to fetch history", error);
+            }
+        };
+        fetchHistory();
+    }, [refreshTrigger]);
 
     const handleLogout = async () => {
         try {
@@ -44,9 +53,12 @@ export default function Sidebar({ isOpen, onNewChat }) {
                 <h3 className="text-[11px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-3">History</h3>
                 <ul className="space-y-0.5">
                     {history.map((item) => (
-                        <li key={item.id}>
-                            <button className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-[#1e1f2b] rounded-lg transition-colors group text-left">
-                                <MessageSquare size={16} className="text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 flex-shrink-0" />
+                        <li key={item.chat_id}>
+                            <button
+                                onClick={() => onSelectChat(item.chat_id)}
+                                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors group text-left ${currentChatId === item.chat_id ? 'bg-slate-200/80 dark:bg-[#1e1f2b] text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-[#1e1f2b]'}`}
+                            >
+                                <MessageSquare size={16} className={`${currentChatId === item.chat_id ? 'text-[#7c3aed]' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300'} flex-shrink-0`} />
                                 <span className="truncate text-[13px] font-medium">{item.title}</span>
                             </button>
                         </li>
