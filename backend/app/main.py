@@ -1,6 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from dotenv import load_dotenv
 from app.routers import chat, upload, history
+from app.core.firebase import init_firebase
+
+load_dotenv()
+init_firebase()
 
 app = FastAPI(title="Generative AI Research Assistant API")
 

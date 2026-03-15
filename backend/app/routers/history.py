@@ -1,9 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from app.core.security import get_current_user
 
 router = APIRouter()
 
 @router.get("/")
-async def get_history():
+async def get_history(current_user: dict = Depends(get_current_user)):
     # TODO: Fetch chat history from Firestore
     return [
         {"chat_id": "chat_1", "title": "Quantum Computing Basics", "timestamp": "2023-10-27T10:00:00Z"},
@@ -12,7 +13,7 @@ async def get_history():
     ]
 
 @router.get("/{chat_id}")
-async def get_chat_messages(chat_id: str):
+async def get_chat_messages(chat_id: str, current_user: dict = Depends(get_current_user)):
     # TODO: Fetch specific chat messages from Firestore
     return {
         "chat_id": chat_id,

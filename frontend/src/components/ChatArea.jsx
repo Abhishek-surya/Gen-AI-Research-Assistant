@@ -20,10 +20,10 @@ export default function ChatArea({ messages, setMessages, isDarkMode, onToggleDa
     };
 
     return (
-        <div className="flex-1 flex flex-col h-screen bg-[#fafafa] dark:bg-slate-900 relative transition-colors duration-500">
+        <div className="flex-1 flex flex-col h-screen bg-[#fafafa] dark:bg-slate-900 relative">
             {/* Header */}
-            <header className="h-[60px] flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0 transition-colors duration-500">
-                <h1 className="font-bold text-slate-800 dark:text-white text-[15px] transition-colors duration-500">Research Assistant</h1>
+            <header className="h-[60px] flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex-shrink-0">
+                <h1 className="font-bold text-slate-800 dark:text-white text-[15px]">Research Assistant</h1>
                 <button
                     onClick={onToggleDarkMode}
                     className="p-2 rounded-full text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
@@ -53,11 +53,11 @@ export default function ChatArea({ messages, setMessages, isDarkMode, onToggleDa
             </main>
 
             {/* Input Area */}
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#fafafa] dark:from-slate-900 via-[#fafafa]/90 dark:via-slate-900/90 to-transparent pt-10 pb-8 px-4 transition-colors duration-500">
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#fafafa] dark:from-slate-900 via-[#fafafa]/90 dark:via-slate-900/90 to-transparent pt-10 pb-8 px-4">
                 <div className="max-w-[800px] mx-auto flex flex-col items-center">
                     <form
                         onSubmit={handleSend}
-                        className="relative w-full max-w-[700px] flex items-center bg-white dark:bg-slate-800/60 rounded-[32px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-slate-200 dark:border-[#37384b] overflow-hidden focus-within:border-[#7c3aed] focus-within:bg-white dark:focus-within:bg-[#1a1b26] transition-all duration-300"
+                        className="relative w-full max-w-[700px] flex items-center bg-white dark:bg-slate-800/60 rounded-[32px] shadow-[0_2px_12px_rgba(0,0,0,0.04)] border border-slate-200 dark:border-[#37384b] overflow-hidden focus-within:border-[#7c3aed] focus-within:bg-white dark:focus-within:bg-[#1a1b26]"
                     >
                         <textarea
                             value={input}
